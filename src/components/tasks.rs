@@ -5,7 +5,7 @@ use std::path::Path;
 
 #[derive(Serialize, Deserialize)]
 pub(crate) struct Tasks {
-    tasks: Vec<Task>
+    tasks: Vec<Task>,
 }
 
 impl Tasks {
@@ -26,7 +26,8 @@ impl Tasks {
     }
 
     pub(crate) fn get_task_mut_err(&mut self, id: TaskId) -> anyhow::Result<&mut Task> {
-        self.get_task_mut(id).ok_or_else(|| anyhow::anyhow!("no task at ID {id}"))
+        self.get_task_mut(id)
+            .ok_or_else(|| anyhow::anyhow!("no task at ID {id}"))
     }
 
     pub(crate) fn num_tasks(&self) -> usize {

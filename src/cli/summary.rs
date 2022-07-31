@@ -1,6 +1,9 @@
 use clap::Subcommand;
 
-use crate::{components::{time::duration::TimeInterval, list::Tasks}, format::TaskListFormatter};
+use crate::{
+    components::{tasks::Tasks, time::duration::TimeInterval},
+    format::TaskListFormatter,
+};
 
 #[derive(Debug, Subcommand)]
 pub(crate) enum Summary {
@@ -19,10 +22,10 @@ impl Summary {
         match self {
             Summary::Pending => {
                 format.print(tasks.iter().filter(|(_, task)| !task.is_completed()));
-            },
+            }
             Summary::Completed { interval } => {
                 format.print(tasks.iter().filter(|(_, task)| task.is_completed_in_past(&interval)));
-            },
+            }
         };
         Ok(())
     }

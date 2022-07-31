@@ -3,8 +3,9 @@ use std::fmt::Display;
 use super::{
     outcome::Outcome,
     short_string::ShortString,
+    tasks::Tasks,
     time::{today, DATE_FORMAT},
-    TaskId, list::Tasks,
+    TaskId,
 };
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
@@ -40,10 +41,7 @@ impl Status {
     }
 
     pub(crate) fn blocked_by_other(reason: ShortString) -> Self {
-        Self::BlockedByOther {
-            date: today(),
-            reason,
-        }
+        Self::BlockedByOther { date: today(), reason }
     }
 
     pub(crate) fn completed(outcome: Outcome) -> Self {

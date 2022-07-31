@@ -1,8 +1,14 @@
 use clap::Subcommand;
 
-use crate::{components::{short_string::ShortString, category::Category, time::date_specifier::DateSpecifier, TaskId, list::Tasks, task::Task}, format::TaskListFormatter};
+use crate::{
+    components::{
+        category::Category, short_string::ShortString, task::Task, tasks::Tasks, time::date_specifier::DateSpecifier,
+        TaskId,
+    },
+    format::TaskListFormatter,
+};
 
-use super::{update::Update, summary::Summary};
+use super::{summary::Summary, update::Update};
 
 #[derive(Debug, Subcommand)]
 pub(crate) enum Command {
@@ -56,10 +62,15 @@ pub(crate) enum Command {
 impl Command {
     pub(crate) fn run(self, tasks: &mut Tasks) -> anyhow::Result<()> {
         match self {
-            Command::Add { short, long, category, deadline } => {
+            Command::Add {
+                short,
+                long,
+                category,
+                deadline,
+            } => {
                 let task = Task::new(short, category, long, deadline)?;
                 tasks.add_task(task);
-            },
+            }
             Command::Start { id } => tasks.get_task_mut_err(id)?.start()?,
             Command::Update { id, update } => update.run(id, tasks)?,
             Command::Print { format, summary } => summary.run(format, tasks)?,
@@ -67,7 +78,7 @@ impl Command {
                 let num = tasks.num_tasks();
                 tasks.clear();
                 println!("Cleared {num} tasks.")
-            },
+            }
         };
         Ok(())
     }

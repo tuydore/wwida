@@ -1,6 +1,6 @@
 use clap::Subcommand;
 
-use crate::components::{TaskId, short_string::ShortString, outcome::Outcome, status::Status, list::Tasks};
+use crate::components::{outcome::Outcome, short_string::ShortString, status::Status, tasks::Tasks, TaskId};
 
 #[derive(Debug, Subcommand)]
 pub(crate) enum StatusUpdate {
@@ -27,7 +27,9 @@ impl StatusUpdate {
     pub(crate) fn run(self, id: TaskId, tasks: &mut Tasks) -> anyhow::Result<()> {
         let status = match self {
             StatusUpdate::InProgress => Status::in_progress(),
-            StatusUpdate::BlockedByTask { id: blocking_id } => Status::blocked_by_task(blocking_id, tasks).expect("could not set status"),
+            StatusUpdate::BlockedByTask { id: blocking_id } => {
+                Status::blocked_by_task(blocking_id, tasks).expect("could not set status")
+            }
             StatusUpdate::BlockedByOther { reason } => Status::blocked_by_other(reason),
             StatusUpdate::Completed { outcome } => Status::completed(outcome),
             StatusUpdate::Discarded { reason } => Status::discarded(reason),

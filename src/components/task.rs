@@ -1,4 +1,9 @@
-use super::{category::Category, short_string::ShortString, status::Status, time::{date_specifier::DateSpecifier, duration::TimeInterval}};
+use super::{
+    category::Category,
+    short_string::ShortString,
+    status::Status,
+    time::{date_specifier::DateSpecifier, duration::TimeInterval},
+};
 use anyhow::Result;
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
@@ -35,8 +40,8 @@ impl Task {
         long: Option<&str>,
         deadline: Option<&str>,
     ) -> Result<Self> {
-        use std::str::FromStr;
         use anyhow::Context;
+        use std::str::FromStr;
 
         let short = ShortString::from_str(short).with_context(|| "error creating new task")?;
 

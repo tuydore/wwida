@@ -2,13 +2,13 @@ use std::{path::PathBuf, str::FromStr};
 
 use clap::Parser;
 
-use crate::components::list::Tasks;
+use crate::components::tasks::Tasks;
 
 use self::command::Command;
 
 pub(crate) mod command;
-pub(crate) mod update;
 pub(crate) mod summary;
+pub(crate) mod update;
 
 fn get_filepath() -> PathBuf {
     if let Ok(s) = std::env::var("WWIDA_CACHE") {

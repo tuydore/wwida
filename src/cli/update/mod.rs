@@ -1,6 +1,8 @@
 use clap::Subcommand;
 
-use crate::components::{short_string::ShortString, category::Category, time::date_specifier::DateSpecifier, list::Tasks, TaskId};
+use crate::components::{
+    category::Category, short_string::ShortString, tasks::Tasks, time::date_specifier::DateSpecifier, TaskId,
+};
 
 use self::status::StatusUpdate;
 
@@ -9,14 +11,10 @@ pub(crate) mod status;
 #[derive(Debug, Subcommand)]
 pub(crate) enum Update {
     /// Updates the tasks's short description.
-    Short {
-        short: ShortString,
-    },
+    Short { short: ShortString },
 
     /// Updates the tasks's long description.
-    Long {
-        long: String,
-    },
+    Long { long: String },
 
     /// Removes the task's long description.
     DiscardLong,
@@ -34,9 +32,7 @@ pub(crate) enum Update {
     },
 
     /// Updates the tasks's deadline.
-    Deadline {
-        deadline: DateSpecifier,
-    },
+    Deadline { deadline: DateSpecifier },
 
     /// Removes the task's long description.
     DiscardDeadline,
