@@ -7,13 +7,13 @@ use super::today;
 
 #[non_exhaustive]
 #[derive(Debug, Serialize, Deserialize)]
-pub(crate) enum Throwback {
+pub(crate) enum TimeInterval {
     Days(usize),
     Weeks(usize),
     Months(usize),
 }
 
-impl Throwback {
+impl TimeInterval {
     /// Checks whether a date is in the past throwback interval.
     ///
     /// ```txt
@@ -31,14 +31,14 @@ impl Throwback {
         }
 
         match self {
-            Throwback::Days(days) => delta.num_days() as usize <= *days,
-            Throwback::Weeks(weeks) => delta.num_weeks() as usize <= *weeks,
-            Throwback::Months(months) => delta.num_days() as usize <= months * 30,
+            TimeInterval::Days(days) => delta.num_days() as usize <= *days,
+            TimeInterval::Weeks(weeks) => delta.num_weeks() as usize <= *weeks,
+            TimeInterval::Months(months) => delta.num_days() as usize <= months * 30,
         }
     }
 }
 
-impl FromStr for Throwback {
+impl FromStr for TimeInterval {
     type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {

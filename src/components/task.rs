@@ -1,4 +1,4 @@
-use super::{category::Category, short_string::ShortString, status::Status, time::date_specifier::DateSpecifier};
+use super::{category::Category, short_string::ShortString, status::Status, time::{date_specifier::DateSpecifier, duration::TimeInterval}};
 use anyhow::Result;
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
@@ -72,8 +72,8 @@ impl Task {
         self.category = category;
     }
 
-    pub(crate) fn set_deadline(&mut self, deadline: NaiveDate) {
-        self.deadline = Some(deadline);
+    pub(crate) fn set_deadline<ND: Into<NaiveDate>>(&mut self, deadline: ND) {
+        self.deadline = Some(deadline.into());
     }
 
     pub(crate) fn last_status(&self) -> &Status {
@@ -86,6 +86,18 @@ impl Task {
             Ok(())
         } else {
             Err(anyhow::anyhow!("cannot start already started task"))
+        }
+    }
+
+    pub(crate) fn is_completed(&self) -> bool {
+        matches!(self.last_status(), Status::Completed { .. })
+    }
+
+    pub(crate) fn is_completed_in_past(&self, throwback: &TimeInterval) -> bool {
+        if let Status::Completed { date, .. } = self.last_status() {
+            throwback.contains(date)
+        } else {
+            false
         }
     }
 }

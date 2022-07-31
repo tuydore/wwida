@@ -4,7 +4,7 @@ use super::{
     outcome::Outcome,
     short_string::ShortString,
     time::{today, DATE_FORMAT},
-    TaskId, list::TaskList,
+    TaskId, list::Tasks,
 };
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
@@ -31,7 +31,7 @@ impl Status {
         Self::InProgress { date: today() }
     }
 
-    pub(crate) fn blocked_by_task(id: TaskId, tasks: &TaskList) -> anyhow::Result<Self> {
+    pub(crate) fn blocked_by_task(id: TaskId, tasks: &Tasks) -> anyhow::Result<Self> {
         if !tasks.has_id(id) {
             Err(anyhow::anyhow!("blocking ID {id} does not exist"))
         } else {

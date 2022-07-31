@@ -4,11 +4,11 @@ use serde::{Deserialize, Serialize};
 use std::path::Path;
 
 #[derive(Serialize, Deserialize)]
-pub(crate) struct TaskList {
+pub(crate) struct Tasks {
     tasks: Vec<Task>
 }
 
-impl TaskList {
+impl Tasks {
     pub(crate) fn new() -> Self {
         Self { tasks: Vec::new() }
     }
@@ -23,6 +23,10 @@ impl TaskList {
 
     pub(crate) fn get_task_mut(&mut self, id: TaskId) -> Option<&mut Task> {
         self.tasks.get_mut(id)
+    }
+
+    pub(crate) fn get_task_mut_err(&mut self, id: TaskId) -> anyhow::Result<&mut Task> {
+        self.get_task_mut(id).ok_or_else(|| anyhow::anyhow!("no task at ID {id}"))
     }
 
     pub(crate) fn num_tasks(&self) -> usize {
@@ -60,7 +64,7 @@ mod tests {
 
     use super::*;
 
-    fn sample_list() -> TaskList {
+    fn sample_list() -> Tasks {
         let task_vec = vec![
             Task::from_strings("peel potatoes", Some("documentation"), None, Some("today"))
                 .expect("could not create task"),
@@ -74,7 +78,7 @@ mod tests {
             .expect("could not create task"),
             Task::from_strings("eat", Some("message"), None, None).expect("could not create task"),
         ];
-        TaskList { tasks: task_vec }
+        Tasks { tasks: task_vec }
     }
 
     #[test]
