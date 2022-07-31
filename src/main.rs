@@ -63,7 +63,7 @@ pub(crate) enum Commands {
 
     /// Print misc. summaries.
     Print {
-        #[clap(short, long, arg_enum)]
+        #[clap(short, long, arg_enum, default_value_t = TaskListFormatter::Long)]
         format: TaskListFormatter,
 
         #[clap(subcommand)]
@@ -91,6 +91,7 @@ pub(crate) enum Updates {
 
     /// Updates the tasks's category.
     Category {
+        #[clap(arg_enum)]
         category: Category,
     },
 

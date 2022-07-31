@@ -71,7 +71,7 @@ pub(crate) fn print_long<'t>(tasks: impl Iterator<Item = (TaskId, &'t Task)>) {
         }
         println!("│ CATEGORY :: {}", task.category);
         if let Some(deadline) = task.deadline {
-            println!("│ DEADLINE :: {deadline}")
+            println!("│ DEADLINE :: {}", deadline.format(DATE_FORMAT));
         }
         println!(
             "│ STATUS   :: {}",

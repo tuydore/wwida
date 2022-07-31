@@ -21,10 +21,6 @@ impl TaskList {
         self.tasks.push(task);
     }
 
-    pub(crate) fn get_task_ref(&self, id: TaskId) -> Option<&Task> {
-        self.tasks.get(id)
-    }
-
     pub(crate) fn get_task_mut(&mut self, id: TaskId) -> Option<&mut Task> {
         self.tasks.get_mut(id)
     }
