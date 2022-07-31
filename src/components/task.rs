@@ -1,7 +1,5 @@
-use std::str::FromStr;
-
 use super::{category::Category, short_string::ShortString, status::Status, time::date_specifier::DateSpecifier};
-use anyhow::{Context, Result};
+use anyhow::Result;
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 
@@ -37,6 +35,9 @@ impl Task {
         long: Option<&str>,
         deadline: Option<&str>,
     ) -> Result<Self> {
+        use std::str::FromStr;
+        use anyhow::Context;
+
         let short = ShortString::from_str(short).with_context(|| "error creating new task")?;
 
         Self::new(
@@ -59,6 +60,10 @@ impl Task {
         self.long = None;
     }
 
+    pub(crate) fn unset_deadline(&mut self) {
+        self.deadline = None;
+    }
+
     pub(crate) fn set_status(&mut self, status: Status) {
         self.statuses.push(status);
     }
@@ -67,7 +72,20 @@ impl Task {
         self.category = category;
     }
 
+    pub(crate) fn set_deadline(&mut self, deadline: NaiveDate) {
+        self.deadline = Some(deadline);
+    }
+
     pub(crate) fn last_status(&self) -> &Status {
         self.statuses.last().expect("no last status")
+    }
+
+    pub(crate) fn start(&mut self) -> anyhow::Result<()> {
+        if matches!(self.last_status(), Status::NotStarted) {
+            self.set_status(Status::in_progress());
+            Ok(())
+        } else {
+            Err(anyhow::anyhow!("cannot start already started task"))
+        }
     }
 }

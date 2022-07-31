@@ -46,13 +46,19 @@ pub(crate) enum Commands {
     },
 
     /// Set the status of a task.
-    Set {
+    Start {
         /// ID of task to set.
         id: TaskId,
+    },
 
-        /// Status command.
+    /// Update a task.
+    Update {
+        /// Task ID.
+        id: TaskId,
+
+        /// What to update.
         #[clap(subcommand)]
-        status: Statuses,
+        update: Updates,
     },
 
     /// Print misc. summaries.
@@ -63,6 +69,44 @@ pub(crate) enum Commands {
         #[clap(subcommand)]
         summary: Summaries,
     },
+
+    /// Deletes all tasks.
+    Clear,
+}
+
+#[derive(Debug, Subcommand)]
+pub(crate) enum Updates {
+    /// Updates the tasks's short description.
+    Short {
+        short: ShortString,
+    },
+
+    /// Updates the tasks's long description.
+    Long {
+        long: String,
+    },
+
+    /// Removes the task's long description.
+    DiscardLong,
+
+    /// Updates the tasks's category.
+    Category {
+        category: Category,
+    },
+
+    /// Updates the tasks's status.
+    Status {
+        #[clap(subcommand)]
+        status: Statuses,
+    },
+
+    /// Updates the tasks's deadline.
+    Deadline {
+        deadline: DateSpecifier,
+    },
+
+    /// Removes the task's long description.
+    DiscardDeadline,
 }
 
 #[derive(Debug, Subcommand)]
@@ -125,20 +169,7 @@ fn main() {
         } => {
             let task = Task::new(short, category, long, deadline).expect("could not create new task");
             tasks.add_task(task);
-        }
-        Commands::Set { id, status } => {
-            let status = match status {
-                Statuses::InProgress => Status::in_progress(),
-                Statuses::BlockedByTask { id: blocking_id } => Status::blocked_by_task(blocking_id, &tasks).expect("could not set status"),
-                Statuses::BlockedByOther { reason } => Status::blocked_by_other(reason),
-                Statuses::Completed { outcome } => Status::completed(outcome),
-                Statuses::Discarded { reason } => Status::discarded(reason),
-            };
-            tasks
-                .get_task_mut(id)
-                .unwrap_or_else(|| panic!("could not find task with ID {id}"))
-                .set_status(status);
-        }
+        },
         Commands::Print { format, summary } => {
             match summary {
                 Summaries::Pending => {
@@ -158,7 +189,33 @@ fn main() {
                     format.print(iter);
                 }
             };
-        }
+        },
+        Commands::Start { id } => tasks.get_task_mut(id).expect("task ID not found").start().unwrap(),
+        Commands::Update { id, update } => {
+            match update {
+                Updates::Short { short } => tasks.get_task_mut(id).expect("task ID not found").set_short(short),
+                Updates::Long { long } => tasks.get_task_mut(id).expect("task ID not found").set_long(long),
+                Updates::Category { category } => tasks.get_task_mut(id).expect("task ID not found").set_category(category),
+                Updates::Status { status } => {
+                    let status = match status {
+                        Statuses::InProgress => Status::in_progress(),
+                        Statuses::BlockedByTask { id: blocking_id } => Status::blocked_by_task(blocking_id, &tasks).expect("could not set status"),
+                        Statuses::BlockedByOther { reason } => Status::blocked_by_other(reason),
+                        Statuses::Completed { outcome } => Status::completed(outcome),
+                        Statuses::Discarded { reason } => Status::discarded(reason),
+                    };
+                    tasks.get_task_mut(id).expect("task ID not found").set_status(status);
+                },
+                Updates::Deadline { deadline } => tasks.get_task_mut(id).expect("task ID not found").set_deadline(deadline.into()),
+                Updates::DiscardLong => tasks.get_task_mut(id).expect("task ID not found").unset_long(),
+                Updates::DiscardDeadline => tasks.get_task_mut(id).expect("task ID not found").unset_deadline(),
+            }
+        },
+        Commands::Clear => {
+            let num = tasks.num_tasks();
+            tasks.clear();
+            println!("CLEARED {num} TASKS")
+        },
     }
 
     tasks.save(&filepath).expect("could not save tasks");

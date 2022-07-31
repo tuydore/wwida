@@ -29,6 +29,10 @@ impl TaskList {
         self.tasks.get_mut(id)
     }
 
+    pub(crate) fn num_tasks(&self) -> usize {
+        self.tasks.len()
+    }
+
     pub(crate) fn save(self, filepath: &Path) -> Result<()> {
         let bytes = bson::to_vec(&self)?;
         std::fs::write(filepath, bytes)?;
@@ -43,6 +47,10 @@ impl TaskList {
         } else {
             Ok(Self::new())
         }
+    }
+
+    pub(crate) fn clear(&mut self) {
+        self.tasks.clear();
     }
 
     pub(crate) fn iter(&self) -> impl Iterator<Item = (TaskId, &Task)> {
