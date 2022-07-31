@@ -1,7 +1,13 @@
 [package]
+authors = ["Tudor Tomescu <tuydore+github@protonmail.com>"]
+categories = ["command-line-utilities"]
+description = "What Was I Doing Again? Simple CLI to-do list app."
 edition = "2021"
+keywords = ["to-do", "reminders", "cli", "tasks"]
+license = "MIT"
 name = "wwida"
-version = "0.1.0"
+readme = "README.md"
+version = "1.0.0"
 
 [dependencies]
 anyhow = "1.0"
