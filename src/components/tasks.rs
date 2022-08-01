@@ -73,7 +73,7 @@ mod tests {
             Task::from_strings(
                 "turn on the hob",
                 Some("other"),
-                Some("really running out of ideas here"),
+                Some("really running out of ideas here, this string must exceed 50 characters..."),
                 Some("tomorrow"),
             )
             .expect("could not create task"),

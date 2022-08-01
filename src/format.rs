@@ -56,18 +56,18 @@ pub(crate) fn print_long<'t>(tasks: impl Iterator<Item = (TaskId, &'t Task)>) {
         println!(" {}\n{}", id_str, sep);
         println!("│ SHORT    :: {}", task.short);
         if let Some(long) = &task.long {
-            for (idx, chunk) in long.chars().chunks(SHORT_STRING_THRESHOLD).into_iter().enumerate() {
-                if idx == 0 {
-                    print!("│ LONG     :: ");
-                } else {
-                    print!("│             ");
+            print!("│ LONG     :: ");
+            let mut counter = SHORT_STRING_THRESHOLD ;
+            for word in long.split_ascii_whitespace() {
+                if counter > word.len() {
+                    counter -= word.len() + 1;
+                    print!("{word} ");
+                } else { // TODO: fix edge case of words >= 50 chars
+                    counter = SHORT_STRING_THRESHOLD - word.len() - 1;
+                    print!("\n│             {word} ");
                 }
-
-                for char in chunk {
-                    print!("{char}");
-                }
-                println!();
             }
+            println!();
         }
         println!("│ CATEGORY :: {}", task.category);
         if let Some(deadline) = task.deadline {
