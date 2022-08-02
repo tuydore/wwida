@@ -7,5 +7,6 @@ pub(crate) mod tasks;
 pub(crate) mod time;
 pub(crate) mod priority;
 pub(crate) mod tag;
+pub(crate) mod deadline;
 
 pub(crate) type TaskId = usize;

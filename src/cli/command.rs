@@ -3,7 +3,7 @@ use clap::Subcommand;
 use crate::{
     components::{
         category::Category, short_string::ShortString, task::Task, tasks::Tasks, time::date_specifier::DateSpecifier,
-        TaskId, priority::Priority, tag::Tag,
+        TaskId, priority::Priority, tag::tags_from_comma_separated_string,
     },
     format::TaskListFormatter,
 };
@@ -32,8 +32,9 @@ pub(crate) enum Command {
         #[clap(short, long, value_enum, default_value_t)]
         priority: Priority,
 
+        /// Comma-separated list of tags.
         #[clap(short, long)]
-        tags: Vec<Tag>,
+        tags: String,
     },
 
     /// Set the status of a task.
@@ -54,11 +55,12 @@ pub(crate) enum Command {
 
     /// Print misc. summaries.
     Print {
-        #[clap(short, long, value_enum, default_value_t)]
+        #[clap(long, value_enum, default_value_t)]
         format: TaskListFormatter,
 
-        #[clap(short, long)]
-        filter: Option<Vec<Tag>>,
+        /// Comma-separated list of tags.
+        #[clap(long)]
+        filter: Option<String>,
 
         #[clap(subcommand)]
         summary: Summary,
@@ -83,12 +85,12 @@ impl Command {
                 tags,
                 
             } => {
-                let task = Task::new(short, category, long, deadline, priority, tags)?;
+                let task = Task::new(short, category, long, deadline, priority, tags_from_comma_separated_string(tags)?)?;
                 tasks.add_task(task);
             }
             Command::Start { id } => tasks.get_task_mut_err(id)?.start()?,
             Command::Update { id, update } => update.run(id, tasks)?,
-            Command::Print { format, summary } => summary.run(format, tasks)?,
+            Command::Print { format, summary, filter, sort } => summary.run(format, tasks, filter.map(tags_from_comma_separated_string).transpose()?, sort)?,
             Command::Clear => {
                 let num = tasks.num_tasks();
                 tasks.clear();

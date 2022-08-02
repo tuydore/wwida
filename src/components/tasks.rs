@@ -54,7 +54,7 @@ impl Tasks {
         self.tasks.clear();
     }
 
-    pub(crate) fn iter(&self) -> impl Iterator<Item = (TaskId, &Task)> {
+    pub(crate) fn id_task_iter(&self) -> impl Iterator<Item = (TaskId, &Task)> {
         self.tasks.iter().enumerate()
     }
 }

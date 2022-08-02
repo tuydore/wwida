@@ -1,8 +1,10 @@
+use std::collections::HashSet;
+
 use super::{
     category::Category,
     short_string::ShortString,
     status::Status,
-    time::{date_specifier::DateSpecifier, duration::TimeInterval}, priority::Priority, tag::Tag,
+    time::{date_specifier::DateSpecifier, duration::TimeInterval}, priority::Priority, tag::Tag, deadline::Deadline,
 };
 use anyhow::Result;
 use chrono::NaiveDate;
@@ -14,9 +16,9 @@ pub(crate) struct Task {
     pub(crate) long: Option<String>,
     pub(crate) statuses: Vec<Status>,
     pub(crate) category: Category,
-    pub(crate) deadline: Option<NaiveDate>,
+    pub(crate) deadline: Deadline,
     pub(crate) priority: Priority,
-    pub(crate) tags: Vec<Tag>,
+    pub(crate) tags: HashSet<Tag>,
 }
 
 impl Task {
@@ -33,9 +35,9 @@ impl Task {
             long,
             statuses: vec![Status::default()],
             category,
-            deadline: deadline.map(NaiveDate::from),
+            deadline: Deadline(deadline.map(NaiveDate::from)),
             priority,
-            tags,
+            tags: tags.into_iter().collect(),
         })
     }
 
@@ -76,7 +78,7 @@ impl Task {
     }
 
     pub(crate) fn unset_deadline(&mut self) {
-        self.deadline = None;
+        self.deadline = Deadline(None);
     }
 
     pub(crate) fn set_status(&mut self, status: Status) {
@@ -88,7 +90,7 @@ impl Task {
     }
 
     pub(crate) fn set_deadline<ND: Into<NaiveDate>>(&mut self, deadline: ND) {
-        self.deadline = Some(deadline.into());
+        self.deadline = Deadline(Some(deadline.into()));
     }
 
     pub(crate) fn last_status(&self) -> &Status {

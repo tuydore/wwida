@@ -4,7 +4,7 @@ use clap::clap_derive::ValueEnum;
 use serde::{Deserialize, Serialize};
 
 #[non_exhaustive]
-#[derive(Debug, Serialize, Deserialize, Clone, ValueEnum)]
+#[derive(Debug, Serialize, Deserialize, Clone, ValueEnum, PartialEq, PartialOrd, Eq, Ord)]
 pub(crate) enum Category {
     Task,
     Feature,

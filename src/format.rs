@@ -12,10 +12,10 @@ pub(crate) enum TaskListFormatter {
 }
 
 impl TaskListFormatter {
-    pub(crate) fn print<'t>(&self, tasks: impl Iterator<Item = (TaskId, &'t Task)>) {
+    pub(crate) fn print(&self, tasks: Vec<(TaskId, &Task)>) {
         match self {
-            TaskListFormatter::Short => print_short(tasks.map(|(_, task)| task)),
-            TaskListFormatter::Long => print_long(tasks),
+            TaskListFormatter::Short => print_short(tasks.into_iter().map(|(_, task)| task)),
+            TaskListFormatter::Long => print_long(tasks.into_iter()),
         }
     }
 }
@@ -45,7 +45,7 @@ pub(crate) fn print_short<'t>(tasks: impl Iterator<Item = &'t Task>) {
             print!("[{:^15}] {short:╌<51}", task.category.to_string());
         }
 
-        if let Some(deadline) = task.deadline {
+        if let Some(deadline) = task.deadline.0 {
             print!(" [ DUE {} ]", deadline.format(DATE_FORMAT));
         } else {
             print!(" [{:^22}]", "NO DEADLINE");
@@ -66,7 +66,7 @@ pub(crate) fn print_long<'t>(tasks: impl Iterator<Item = (TaskId, &'t Task)>) {
             print_split_string("│ LONG     :: ", long, SHORT_STRING_THRESHOLD);
         }
         println!("│ CATEGORY :: {}", task.category);
-        if let Some(deadline) = task.deadline {
+        if let Some(deadline) = task.deadline.0 {
             println!("│ DEADLINE :: {}", deadline.format(DATE_FORMAT));
         }
         println!(
