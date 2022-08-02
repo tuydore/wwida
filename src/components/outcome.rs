@@ -1,10 +1,10 @@
 use std::fmt::Display;
 
-use clap::clap_derive::ArgEnum;
+use clap::clap_derive::ValueEnum;
 use serde::{Deserialize, Serialize};
 
 #[non_exhaustive]
-#[derive(Debug, Serialize, Deserialize, Clone, ArgEnum)]
+#[derive(Debug, Serialize, Deserialize, Clone, ValueEnum)]
 pub(crate) enum Outcome {
     Success,
     Failure,

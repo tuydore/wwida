@@ -67,17 +67,19 @@ mod tests {
 
     fn sample_list() -> Tasks {
         let task_vec = vec![
-            Task::from_strings("peel potatoes", Some("documentation"), None, Some("today"))
+            Task::from_strings("peel potatoes", Some("documentation"), None, Some("today"), Some("normal"), vec![])
                 .expect("could not create task"),
-            Task::from_strings("chop carrots", Some("task"), None, Some("today")).expect("could not create task"),
+            Task::from_strings("chop carrots", Some("task"), None, Some("today"), Some("normal"), vec![]).expect("could not create task"),
             Task::from_strings(
                 "turn on the hob",
                 Some("other"),
                 Some("really running out of ideas here, this string must exceed 50 characters..."),
-                Some("tomorrow"),
+                Some("tomorrow"), 
+                Some("normal"), 
+                vec!["foo", "bar", "baz"]
             )
             .expect("could not create task"),
-            Task::from_strings("eat", Some("message"), None, None).expect("could not create task"),
+            Task::from_strings("eat", Some("message"), None, None, Some("low"), vec!["this-is-a-very-long-tag-1234", "one", "two", "three", "four"]).expect("could not create task"),
         ];
         Tasks { tasks: task_vec }
     }

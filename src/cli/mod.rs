@@ -9,6 +9,7 @@ use self::command::Command;
 pub(crate) mod command;
 pub(crate) mod summary;
 pub(crate) mod update;
+pub(crate) mod sort;
 
 fn get_filepath() -> PathBuf {
     if let Ok(s) = std::env::var("WWIDA_CACHE") {

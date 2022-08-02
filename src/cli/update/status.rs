@@ -15,7 +15,7 @@ pub(crate) enum StatusUpdate {
 
     /// Task has been completed.
     Completed {
-        #[clap(arg_enum)]
+        #[clap(value_enum)]
         outcome: Outcome,
     },
 

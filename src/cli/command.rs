@@ -3,12 +3,12 @@ use clap::Subcommand;
 use crate::{
     components::{
         category::Category, short_string::ShortString, task::Task, tasks::Tasks, time::date_specifier::DateSpecifier,
-        TaskId,
+        TaskId, priority::Priority, tag::Tag,
     },
     format::TaskListFormatter,
 };
 
-use super::{summary::Summary, update::Update};
+use super::{summary::Summary, update::Update, sort::SortBy};
 
 #[derive(Debug, Subcommand)]
 pub(crate) enum Command {
@@ -22,12 +22,18 @@ pub(crate) enum Command {
         long: Option<String>,
 
         /// Task category.
-        #[clap(arg_enum, short, long)]
-        category: Option<Category>,
+        #[clap(value_enum, short, long, default_value_t)]
+        category: Category,
 
         /// Task deadline, e.g. today, tomorrow, this/tuesday, next/friday or 01/08/2022.
         #[clap(short, long)]
         deadline: Option<DateSpecifier>,
+
+        #[clap(short, long, value_enum, default_value_t)]
+        priority: Priority,
+
+        #[clap(short, long)]
+        tags: Vec<Tag>,
     },
 
     /// Set the status of a task.
@@ -48,11 +54,17 @@ pub(crate) enum Command {
 
     /// Print misc. summaries.
     Print {
-        #[clap(short, long, arg_enum, default_value_t = TaskListFormatter::Long)]
+        #[clap(short, long, value_enum, default_value_t)]
         format: TaskListFormatter,
+
+        #[clap(short, long)]
+        filter: Option<Vec<Tag>>,
 
         #[clap(subcommand)]
         summary: Summary,
+
+        #[clap(short, long, value_enum, default_value_t)]
+        sort: SortBy,
     },
 
     /// Deletes all tasks.
@@ -67,8 +79,11 @@ impl Command {
                 long,
                 category,
                 deadline,
+                priority,
+                tags,
+                
             } => {
-                let task = Task::new(short, category, long, deadline)?;
+                let task = Task::new(short, category, long, deadline, priority, tags)?;
                 tasks.add_task(task);
             }
             Command::Start { id } => tasks.get_task_mut_err(id)?.start()?,

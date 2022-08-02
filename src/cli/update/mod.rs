@@ -21,7 +21,7 @@ pub(crate) enum Update {
 
     /// Updates the tasks's category.
     Category {
-        #[clap(arg_enum)]
+        #[clap(value_enum)]
         category: Category,
     },
 

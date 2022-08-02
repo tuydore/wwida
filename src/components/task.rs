@@ -2,7 +2,7 @@ use super::{
     category::Category,
     short_string::ShortString,
     status::Status,
-    time::{date_specifier::DateSpecifier, duration::TimeInterval},
+    time::{date_specifier::DateSpecifier, duration::TimeInterval}, priority::Priority, tag::Tag,
 };
 use anyhow::Result;
 use chrono::NaiveDate;
@@ -15,21 +15,27 @@ pub(crate) struct Task {
     pub(crate) statuses: Vec<Status>,
     pub(crate) category: Category,
     pub(crate) deadline: Option<NaiveDate>,
+    pub(crate) priority: Priority,
+    pub(crate) tags: Vec<Tag>,
 }
 
 impl Task {
     pub(crate) fn new(
         short: ShortString,
-        category: Option<Category>,
+        category: Category,
         long: Option<String>,
         deadline: Option<DateSpecifier>,
+        priority: Priority,
+        tags: Vec<Tag>,
     ) -> Result<Self> {
         Ok(Self {
             short,
             long,
             statuses: vec![Status::default()],
-            category: category.unwrap_or_default(),
+            category,
             deadline: deadline.map(NaiveDate::from),
+            priority,
+            tags,
         })
     }
 
@@ -39,6 +45,8 @@ impl Task {
         category: Option<&str>,
         long: Option<&str>,
         deadline: Option<&str>,
+        priority: Option<&str>,
+        tags: Vec<&str>,
     ) -> Result<Self> {
         use anyhow::Context;
         use std::str::FromStr;
@@ -47,9 +55,11 @@ impl Task {
 
         Self::new(
             short,
-            category.map(Category::from_str).transpose()?,
+            category.map(Category::from_str).transpose()?.unwrap_or_default(),
             long.map(|s| s.to_string()),
             deadline.map(DateSpecifier::from_str).transpose()?,
+            priority.map(Priority::from_str).transpose()?.unwrap_or_default(),
+            tags.into_iter().map(Tag::from_str).collect::<Result<_, _>>()?
         )
     }
 

@@ -1,11 +1,11 @@
-use clap::clap_derive::ArgEnum;
+use clap::clap_derive::ValueEnum;
 use itertools::Itertools;
 
 use crate::components::{short_string::SHORT_STRING_THRESHOLD, task::Task, time::DATE_FORMAT, TaskId};
 
 struct TickTock(bool);
 
-#[derive(Debug, Clone, ArgEnum)]
+#[derive(Debug, Clone, ValueEnum)]
 pub(crate) enum TaskListFormatter {
     Short,
     Long,
@@ -29,6 +29,12 @@ impl Iterator for TickTock {
     }
 }
 
+impl Default for TaskListFormatter {
+    fn default() -> Self {
+        Self::Long
+    }
+}
+
 pub(crate) fn print_short<'t>(tasks: impl Iterator<Item = &'t Task>) {
     for (task, dash_clock) in tasks.zip(TickTock(false).into_iter()) {
         let short = format!("{} ", task.short);
@@ -40,10 +46,11 @@ pub(crate) fn print_short<'t>(tasks: impl Iterator<Item = &'t Task>) {
         }
 
         if let Some(deadline) = task.deadline {
-            println!(" [ DUE {} ]", deadline.format(DATE_FORMAT));
+            print!(" [ DUE {} ]", deadline.format(DATE_FORMAT));
         } else {
-            println!(" [{:^22}]", "NO DEADLINE");
+            print!(" [{:^22}]", "NO DEADLINE");
         }
+        println!("[ {:<5} ]", task.priority.as_symbol());
     }
 }
 
@@ -56,18 +63,7 @@ pub(crate) fn print_long<'t>(tasks: impl Iterator<Item = (TaskId, &'t Task)>) {
         println!(" {}\n{}", id_str, sep);
         println!("│ SHORT    :: {}", task.short);
         if let Some(long) = &task.long {
-            print!("│ LONG     :: ");
-            let mut counter = SHORT_STRING_THRESHOLD ;
-            for word in long.split_ascii_whitespace() {
-                if counter > word.len() {
-                    counter -= word.len() + 1;
-                    print!("{word} ");
-                } else { // TODO: fix edge case of words >= 50 chars
-                    counter = SHORT_STRING_THRESHOLD - word.len() - 1;
-                    print!("\n│             {word} ");
-                }
-            }
-            println!();
+            print_split_string("│ LONG     :: ", long, SHORT_STRING_THRESHOLD);
         }
         println!("│ CATEGORY :: {}", task.category);
         if let Some(deadline) = task.deadline {
@@ -77,6 +73,26 @@ pub(crate) fn print_long<'t>(tasks: impl Iterator<Item = (TaskId, &'t Task)>) {
             "│ STATUS   :: {}",
             task.statuses.last().expect("task should have a last status")
         );
+        println!("│ PRIORITY :: {}", task.priority.as_symbol());
+        if !task.tags.is_empty() {
+            print_split_string("│ TAGS     :: ", &task.tags.iter().join(", "), SHORT_STRING_THRESHOLD);
+        }
         println!();
     }
+}
+
+fn print_split_string(indent: &str, s: &str, threshold: usize) {
+    print!("{indent}");
+    let indent = " ".repeat(indent.len() - 3);
+    let mut counter = threshold;
+    for word in s.split_ascii_whitespace() {
+        if counter > word.len() {
+            counter -= word.len() + 1;
+            print!("{word} ");
+        } else {  // TODO: fix edge case of words >= 50 chars
+            counter = threshold - word.len() - 1;
+            print!("\n│{indent}{word} ");
+        }
+    }
+    println!();
 }
