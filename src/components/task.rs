@@ -93,6 +93,24 @@ impl Task {
         self.deadline = Deadline(Some(deadline.into()));
     }
 
+    pub(crate) fn set_priority(&mut self, priority: Priority) {
+        self.priority = priority;
+    }
+
+    pub(crate) fn remove_tags(&mut self, tags: &[Tag]) {
+        for tag in tags {
+            if !self.tags.remove(tag) {
+                eprintln!("WARNING: task did not have tag {tag}");
+            }
+        }
+    }
+
+    pub(crate) fn add_tags(&mut self, tags: Vec<Tag>) {
+        for tag in tags {
+            self.tags.insert(tag);
+        }
+    }
+
     pub(crate) fn last_status(&self) -> &Status {
         self.statuses.last().expect("no last status")
     }
