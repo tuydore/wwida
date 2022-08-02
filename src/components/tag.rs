@@ -2,7 +2,7 @@ use std::{str::FromStr, fmt::Display};
 
 use serde::{Serialize, Deserialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub(crate) struct Tag(String);
 
 impl FromStr for Tag {

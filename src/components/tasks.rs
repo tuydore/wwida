@@ -54,8 +54,8 @@ impl Tasks {
         self.tasks.clear();
     }
 
-    pub(crate) fn id_task_iter(&self) -> impl Iterator<Item = (TaskId, &Task)> {
-        self.tasks.iter().enumerate()
+    pub(crate) fn iter(&self) -> std::slice::Iter<Task> {
+        self.tasks.iter()
     }
 }
 

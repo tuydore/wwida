@@ -1,9 +1,12 @@
+use std::collections::BTreeSet;
+
 use clap::Subcommand;
+use itertools::Itertools;
 
 use crate::{
     components::{
         category::Category, short_string::ShortString, task::Task, tasks::Tasks, time::date_specifier::DateSpecifier,
-        TaskId, priority::Priority, tag::tags_from_comma_separated_string,
+        TaskId, priority::Priority, tag::{tags_from_comma_separated_string, Tag},
     },
     format::TaskListFormatter,
 };
@@ -67,6 +70,9 @@ pub(crate) enum Command {
 
     /// Deletes all tasks.
     Clear,
+
+    /// Shows all currently used tags.
+    Tags,
 }
 
 impl Command {
@@ -92,6 +98,10 @@ impl Command {
                 tasks.clear();
                 println!("Cleared {num} tasks.")
             }
+            Command::Tags => {
+                let tags: BTreeSet<Tag> = tasks.iter().flat_map(|task| task.tags.iter()).cloned().collect();
+                println!("{}", tags.iter().join(", "));
+            },
         };
         Ok(())
     }
