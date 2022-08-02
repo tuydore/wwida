@@ -4,7 +4,7 @@ use super::{
     category::Category,
     short_string::ShortString,
     status::Status,
-    time::{date_specifier::DateSpecifier, duration::TimeInterval}, priority::Priority, tag::Tag, deadline::Deadline,
+    time::{date_specifier::DateSpecifier, duration::TimeInterval}, priority::Priority, tag::Tag, deadline::Deadline, outcome::Outcome,
 };
 use anyhow::Result;
 use chrono::NaiveDate;
@@ -115,6 +115,14 @@ impl Task {
             throwback.contains(date)
         } else {
             false
+        }
+    }
+
+    pub(crate) fn outcome(&self) -> anyhow::Result<Outcome> {
+        if let Status::Completed { outcome, .. } = self.last_status() {
+            Ok(*outcome)
+        } else {
+            Err(anyhow::anyhow!("non-completed task has no outcome"))
         }
     }
 }

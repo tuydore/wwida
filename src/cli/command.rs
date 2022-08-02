@@ -21,7 +21,6 @@ pub(crate) enum Command {
         #[clap(short, long)]
         long: Option<String>,
 
-        /// Task category.
         #[clap(value_enum, short, long, default_value_t)]
         category: Category,
 
@@ -37,18 +36,15 @@ pub(crate) enum Command {
         tags: String,
     },
 
-    /// Set the status of a task.
+    /// Set an unstarted task to in progress.
     Start {
-        /// ID of task to set.
         id: TaskId,
     },
 
     /// Update a task.
     Update {
-        /// Task ID.
         id: TaskId,
 
-        /// What to update.
         #[clap(subcommand)]
         update: Update,
     },

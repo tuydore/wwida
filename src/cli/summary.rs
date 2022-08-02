@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use clap::Subcommand;
 
 use crate::{
-    components::{time::duration::TimeInterval, tag::Tag, task::Task, TaskId, tasks::Tasks},
+    components::{time::duration::TimeInterval, tag::Tag, task::Task, TaskId, tasks::Tasks, outcome::Outcome},
     format::TaskListFormatter,
 };
 
@@ -18,6 +18,10 @@ pub(crate) enum Summary {
     Completed {
         /// Time interval to go back.
         interval: TimeInterval,
+
+        /// Completion outcome
+        #[clap(short, long, value_enum)]
+        outcome: Option<Outcome>
     },
 }
 
@@ -29,7 +33,7 @@ impl Summary {
             .filter(|(_, task)| if let Some(filter) = &filter { !filter.is_disjoint(&task.tags) } else { true })
             .filter(|(_, task)| match &self {
                 Summary::Pending => !task.is_completed(),
-                Summary::Completed { interval } => task.is_completed_in_past(interval),
+                Summary::Completed { interval, outcome } => task.is_completed_in_past(interval) && if let Some(outcome) = outcome { task.outcome().expect("task is guaranteed to be completed") == *outcome } else { true },
             })
             .collect::<Vec<(TaskId, &Task)>>();
 

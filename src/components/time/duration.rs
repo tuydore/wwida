@@ -55,7 +55,7 @@ impl FromStr for TimeInterval {
                 .map(Self::Months)
                 .map_err(|_| anyhow::anyhow!("{num} is not a valid number of months"))
         } else {
-            Err(anyhow::anyhow!("cannot interpret {s} as a time unit"))
+            Err(anyhow::anyhow!("cannot interpret {s} as a time unit; use days/n, weeks/n or months/n"))
         }
     }
 }
