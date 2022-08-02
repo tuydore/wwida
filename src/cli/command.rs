@@ -35,7 +35,7 @@ pub(crate) enum Command {
         priority: Priority,
 
         /// Comma-separated list of tags.
-        #[clap(short, long)]
+        #[clap(short, long, default_value_t)]
         tags: String,
     },
 

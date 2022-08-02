@@ -24,5 +24,9 @@ impl Display for Tag {
 }
 
 pub(crate) fn tags_from_comma_separated_string(s: String) -> anyhow::Result<Vec<Tag>> {
+    if s.is_empty() {
+        return Ok(Vec::new());
+    }
+    
     s.split(',').into_iter().map(Tag::from_str).collect()
 }
