@@ -31,7 +31,7 @@ impl Iterator for TickTock {
 
 impl Default for TaskListFormatter {
     fn default() -> Self {
-        Self::Long
+        Self::Short
     }
 }
 

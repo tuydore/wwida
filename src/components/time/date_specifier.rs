@@ -7,8 +7,10 @@ use super::today;
 #[non_exhaustive]
 #[derive(Debug, PartialEq)]
 pub(crate) enum DateSpecifier {
+    Yesterday,
     Today,
     Tomorrow,
+    Last(Weekday),
     This(Weekday),
     Next(Weekday),
     Date(chrono::NaiveDate),
@@ -31,7 +33,9 @@ impl FromStr for DateSpecifier {
     type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s == "today" {
+        if s == "yesterday" {
+            Ok(Self::Yesterday)
+        } else if s == "today" {
             Ok(Self::Today)
         } else if s == "tomorrow" {
             Ok(Self::Tomorrow)
@@ -39,6 +43,8 @@ impl FromStr for DateSpecifier {
             parse_weekday(stripped).map(Self::This)
         } else if let Some(stripped) = s.strip_prefix("next/") {
             parse_weekday(stripped).map(Self::Next)
+        } else if let Some(stripped) = s.strip_prefix("last/") {
+            parse_weekday(stripped).map(Self::Last)
         } else {
             chrono::NaiveDate::parse_from_str(s, "%d/%m/%Y")
                 .map_err(|_| anyhow::anyhow!("fixed date must be given as e.g. 31/10/2022"))
@@ -59,10 +65,15 @@ impl From<DateSpecifier> for NaiveDate {
             DateSpecifier::Next(day) => {
                 let delta = day.num_days_from_monday() as i64 - today.weekday().num_days_from_monday() as i64;
                 today + Duration::days(delta + 7)
+            },
+            DateSpecifier::Last(day) => {
+                let delta = day.num_days_from_monday() as i64 - today.weekday().num_days_from_monday() as i64;
+                today + Duration::days(delta - 7)
             }
             DateSpecifier::Date(date) => date,
             DateSpecifier::Today => today,
             DateSpecifier::Tomorrow => today.succ(),
+            DateSpecifier::Yesterday => today.pred(),
         }
     }
 }

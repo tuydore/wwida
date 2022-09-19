@@ -44,8 +44,8 @@ impl Status {
         Self::BlockedByOther { date: today(), reason }
     }
 
-    pub(crate) fn completed(outcome: Outcome) -> Self {
-        Self::Completed { date: today(), outcome }
+    pub(crate) fn completed(outcome: Outcome, date: NaiveDate) -> Self {
+        Self::Completed { date, outcome }
     }
 
     pub(crate) fn discarded(reason: ShortString) -> Self {
