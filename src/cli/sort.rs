@@ -14,7 +14,7 @@ pub(crate) enum SortBy {
 
 impl Default for SortBy {
     fn default() -> Self {
-        Self::Id
+        Self::Priority
     }
 }
 

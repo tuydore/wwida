@@ -40,17 +40,19 @@ pub(crate) fn print_short<'t>(tasks: impl Iterator<Item = (TaskId, &'t Task)>) {
         let short = format!("{} ", task.short);
 
         if dash_clock {
-            print!("[ {:^7} ] {short:─<51}", id);
+            print!("[ {:^7} ] {short:─<52}", id);
         } else {
-            print!("[ {:^7} ] {short:╌<51}", id);
+            print!("[ {:^7} ] {short:╌<52}", id);
         }
 
         if let Some(deadline) = task.deadline.0 {
             print!(" [ DUE {} ]", deadline.format(DATE_FORMAT));
         } else {
-            print!(" [{:^22}]", "NO DEADLINE");
+            print!(" [ {:^20} ]", "NO DEADLINE");
         }
-        println!("[ {:<5} ]", task.priority.as_symbol());
+        print!("[ {:<5} ]", task.priority.as_symbol());
+
+        println!("[ {:^50} ]", task.last_status().to_string())
     }
 }
 
