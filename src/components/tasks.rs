@@ -87,7 +87,7 @@ mod tests {
     #[test]
     fn display() {
         let list = sample_list();
-        print_short(list.tasks.iter());
+        print_short(list.tasks.iter().enumerate());
         println!();
         print_long(list.tasks.iter().enumerate());
     }

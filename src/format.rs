@@ -14,7 +14,7 @@ pub(crate) enum TaskListFormatter {
 impl TaskListFormatter {
     pub(crate) fn print(&self, tasks: Vec<(TaskId, &Task)>) {
         match self {
-            TaskListFormatter::Short => print_short(tasks.into_iter().map(|(_, task)| task)),
+            TaskListFormatter::Short => print_short(tasks.into_iter()),
             TaskListFormatter::Long => print_long(tasks.into_iter()),
         }
     }
@@ -35,14 +35,14 @@ impl Default for TaskListFormatter {
     }
 }
 
-pub(crate) fn print_short<'t>(tasks: impl Iterator<Item = &'t Task>) {
-    for (task, dash_clock) in tasks.zip(TickTock(false).into_iter()) {
+pub(crate) fn print_short<'t>(tasks: impl Iterator<Item = (TaskId, &'t Task)>) {
+    for ((id, task), dash_clock) in tasks.zip(TickTock(false).into_iter()) {
         let short = format!("{} ", task.short);
 
         if dash_clock {
-            print!("[{:^15}] {short:─<51}", task.category.to_string());
+            print!("[ {:^7} ] {short:─<51}", id);
         } else {
-            print!("[{:^15}] {short:╌<51}", task.category.to_string());
+            print!("[ {:^7} ] {short:╌<51}", id);
         }
 
         if let Some(deadline) = task.deadline.0 {
